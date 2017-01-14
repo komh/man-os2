@@ -70,11 +70,14 @@ klibc:
 srcdir = @srcdir@
 
 pager = less
-man_install_flags = @man_install_flags@
+man_install_flags = -m 755
 
 DEFS = -DSTDC_HEADERS -DCOMPRESS -DDIRENT -DHAS_TROFF
 
 CFLAGS = $(CFLAG) $(CDEBUG) $(DEFS) -DOS2
+
+# Default object extension
+O ?= .obj
 
 # Where to install the executables.
 bindir = /bin
