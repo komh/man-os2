@@ -121,15 +121,19 @@ util$O: gripes.h
 apropos: apropos.sh
 	sed -e 's,%libdir%,$(libdir),' -e 's,%bindir%,$(bindir),' \
 	    -e 's,%pager%,$(pager),' \
+	    -e '/^PATH=/s/:/;/g' \
 		apropos.sh > apropos
 
 whatis: whatis.sh
 	sed -e 's,%libdir%,$(libdir),' -e 's,%bindir%,$(bindir),' \
 	    -e 's,%pager%,$(pager),' \
+	    -e '/^PATH=/s/:/;/g' \
 		whatis.sh > whatis
 
 makewhatis: makewhatis.sh
-	sed -e 's/%sections%/@sections@/' makewhatis.sh > makewhatis
+	sed -e 's/%sections%/@sections@/' \
+	    -e '/^PATH=/s/:/;/g' \
+		makewhatis.sh > makewhatis
 
 install: all install.man apropos whatis makewhatis
 	install -c $(man_install_flags) man.exe $(bindir)/man.exe
