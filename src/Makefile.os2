@@ -16,11 +16,13 @@ default:
 	@echo "   msc      OS/2 exe [Microsoft C 6.00a]                "
 	@echo "   mscbnd   OS/2 and DOS exe [Microsoft C 6.00a]        "
 	@echo "   emx      OS/2 32-bit exe [EMX/gcc; uses emxlibc.dll] "
+	@echo "   klibc    OS/2 32-bit exe [kLIBC/gcc; uses libcxxx.dll]"
 
 msc: 
 	$(MAKE) -f Makefile.os2 all \
 	CC="cl -nologo -AC" O=".obj" \
 	CFLAG="-Iinclude" \
+	CFLAG_OUT="/Fo" \
 	GETOPT="getopt.obj" \
 	DIRECTOR="director.obj" \
 	LDFLAGS="-Lp"
@@ -29,6 +31,7 @@ mscbnd:
 	$(MAKE) -f Makefile.os2 all \
 	CC="cl -nologo -AC" O=".obj" \
 	CFLAG="-Iinclude" \
+	CFLAG_OUT="/Fo" \
 	GETOPT="getopt.obj" \
 	DIRECTOR="director.obj" \
 	LDFLAGS="-Lp" LBIND="-Fb" \
@@ -38,6 +41,7 @@ msc-debug:
 	$(MAKE) -f Makefile.os2 all \
 	CC="cl -nologo -AC -Zi" O=".obj" \
 	CFLAG="-Od -Iinclude" \
+	CFLAG_OUT="/Fo" \
 	GETOPT="getopt.obj" \
 	DIRECTOR="director.obj" \
 	LDFLAGS="-Lp"
@@ -46,6 +50,15 @@ emx:
 	$(MAKE) -f Makefile.os2 all \
 	CC="gcc -Zomf -Zmtd" O=".obj" \
 	CFLAG="-O" \
+	CFLAG_OUT="-o " \
+	LFLAGS="-s" \
+	BIT="32"
+
+klibc:
+	$(MAKE) -f Makefile.os2 all \
+	CC="gcc -Zomf" O=".obj" \
+	CFLAG="-O" \
+	CFLAG_OUT="-o " \
 	LFLAGS="-s" \
 	BIT="32"
 
@@ -86,7 +99,7 @@ MANOBJ = man.c manpath.c gripes$O glob$O util$O \
 MANPATHOBJ = manpath.c gripes$O util$O $(GETOPT)
 
 .c$O :
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) $(CFLAG_OUT)$@ -c $<
 
 manpath.exe: $(MANPATHOBJ) config.h manpath.h
 	$(CC) $(CFLAGS) -DMAIN -o $@ $(MANPATHOBJ) \
