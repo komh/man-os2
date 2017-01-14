@@ -145,7 +145,19 @@ install: all install.man apropos whatis makewhatis
 	install -d $(DESTDIR)$(libdir)
 	install -c -m 644 manpath.config $(DESTDIR)$(libdir)/$(config_file)
 
-manpages: man.$(manext) manpath.$(manext) apropos.$(manext) whatis.$(manext) 
+uninstall:
+	rm -f $(DESTDIR)$(bindir)/man.exe
+	rm -f $(DESTDIR)$(bindir)/manpath.exe
+	rm -f $(DESTDIR)$(bindir)/apropos
+	rm -f $(DESTDIR)$(bindir)/whatis
+	rm -f $(DESTDIR)$(bindir)/makewhatis
+	rm -f $(DESTDIR)$(libdir)/$(config_file)
+	rm -f $(DESTDIR)$(mandir)/man.$(manext)
+	rm -f $(DESTDIR)$(mandir)/manpath.$(manext)
+	rm -f $(DESTDIR)$(mandir)/apropos.$(manext)
+	rm -f $(DESTDIR)$(mandir)/whatis.$(manext)
+
+manpages: man.$(manext) manpath.$(manext) apropos.$(manext) whatis.$(manext)
 
 man.$(manext): man.man
 	sed -e 's,%libdir%,$(libdir),' -e 's,%bindir%,$(bindir),' \
