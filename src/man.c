@@ -725,8 +725,8 @@ ultimate_source (name, path)
      char *path;
 {
   FILE *fp;
-  char buf[BUFSIZ];
-  char ult[BUFSIZ];
+  static char buf[BUFSIZ];
+  static char ult[BUFSIZ];
   char *beg;
   char *end;
 
@@ -974,12 +974,25 @@ make_roff_command (file)
   if (debug)
     fprintf (stderr, "using default preprocessor sequence\n");
 
+  buf[0] = '\0';
+#ifdef DO_UNCOMPRESS
+  cp = get_expander (file);
+  if (cp)
+    {
+      strcpy (buf, cp);
+      strcat (buf, " ");
+      strcat (buf, file);
+      strcat (buf, " | ");
+      file = "";
+    }
+#endif
+
 #ifdef HAS_TROFF
   if (troff)
     {
       if (strcmp (TBL, "") != 0)
 	{
-	  strcpy (buf, TBL);
+	  strcat (buf, TBL);
 	  strcat (buf, " ");
 	  strcat (buf, file);
 	  strcat (buf, " | ");
@@ -987,7 +1000,7 @@ make_roff_command (file)
 	}
       else
 	{
-	  strcpy (buf, TROFF);
+	  strcat (buf, TROFF);
 	  strcat (buf, " ");
 	  strcat (buf, file);
 	}
@@ -997,7 +1010,7 @@ make_roff_command (file)
     {
       if (nroff == nroff_cmd && strcmp (TBL, "") != 0)
 	{
-	  strcpy (buf, TBL);
+	  strcat (buf, TBL);
 	  strcat (buf, " ");
 	  strcat (buf, file);
 	  strcat (buf, " | ");
@@ -1005,7 +1018,7 @@ make_roff_command (file)
 	}
       else
 	{
-	  strcpy (buf, nroff);
+	  strcat (buf, nroff);
 	  strcat (buf, " ");
 	  strcat (buf, file);
 	}
