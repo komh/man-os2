@@ -142,8 +142,7 @@ install: all install.man apropos whatis makewhatis
 	install -c -m 755 apropos $(DESTDIR)$(bindir)/apropos
 	install -c -m 755 whatis $(DESTDIR)$(bindir)/whatis
 	install -c -m 754 makewhatis $(DESTDIR)$(bindir)/makewhatis
-	install -d $(DESTDIR)$(libdir)
-	install -c -m 644 manpath.config $(DESTDIR)$(libdir)/$(manpath_config_file)
+	install -c -m 644 manpath.config $(DESTDIR)$(bindir)/$(manpath_config_file)
 
 uninstall:
 	rm -f $(DESTDIR)$(bindir)/man.exe
@@ -151,7 +150,7 @@ uninstall:
 	rm -f $(DESTDIR)$(bindir)/apropos
 	rm -f $(DESTDIR)$(bindir)/whatis
 	rm -f $(DESTDIR)$(bindir)/makewhatis
-	rm -f $(DESTDIR)$(libdir)/$(manpath_config_file)
+	rm -f $(DESTDIR)$(bindir)/$(manpath_config_file)
 	rm -f $(DESTDIR)$(mandir)/man.$(manext)
 	rm -f $(DESTDIR)$(mandir)/manpath.$(manext)
 	rm -f $(DESTDIR)$(mandir)/apropos.$(manext)
