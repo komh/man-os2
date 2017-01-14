@@ -1,0 +1,3 @@
+NAME man WINDOWCOMPAT NEWFILES
+DESCRIPTION 'man - format and display the on-line manual pages'
+STACKSIZE 0x10000

@@ -1,0 +1,3 @@
+NAME manpath WINDOWCOMPAT NEWFILES
+DESCRIPTION 'manpath - determine search path for man pages'
+STACKSIZE 0x10000

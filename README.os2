@@ -1,0 +1,104 @@
+This archive contains a port to OS/2 1.x--2.x of John Eaton's
+<jwe@che.utexas.edu> man v1.1. Roughly speaking, man is a front-end to
+a *roff-style program and a pager, and displays Unix-style manual
+pages.
+
+Kai Uwe Rommel <rommel@ars.muc.de> did a port of man 1.0. The major
+visible change in 1.1 is support for compressed formatted man pages
+(e.g., if man finds /man/man1/ls.1, then man will attempt to
+create the compressed formatted man page /man/cat1/ls.1.gz).
+
+
+Installation:
+
+1. Copy man.exe and manpath.exe to some directory in your PATH.  Copy
+manpath.cfg to some directory in INIT, DPATH, or PATH. Edit this file
+to match your directory structure (or use the MANPATH environment
+variable). Enter "manpath -d" to see where man will be hunting for
+man pages.
+
+2. If you have the necessary support programs (see below), edit the
+.cmd and .sh files and install in some directory in your path (the 
+default is c:/bin). Try the makewhatis program. For example, if you 
+have man pages in /man/man1/, then try
+   makewhatis /man
+If successful, ask "whatis" for info on some program in /man/man1, 
+as in
+   whatis ls
+
+
+Changes from the original sources:
+
+1. Support for OS/2 1.x--2.x and DOS with Microsoft C, and for OS/2
+2.x and DOS 32-bit with Eberhard Mattes' emx/gcc, added in new
+Makefile.os2.
+
+2. New "-N" option and NROFF environment variable to permit selecting
+the nroff-style program.
+
+3. New code selects the default nroff-style program: groff under 
+OS/2 2.x, and cawf under OS/2 1.x or DOS.
+
+4. Added gzip support.
+
+5. apropos.sh, makewhatis.sh, and whatis.sh have been adapted from
+the corresonding files.
+
+
+Cheng-Yang Tan <cytan@tristan.tn.cornell.edu> reports:
+
+   It seems that bash requires a .sh extension in shell scripts under
+   OS/2. It is documented in the README file that comes with bash. Also
+   you will have to change the #! part, backslashes and NOT forward
+   slashes MUST be used.
+
+These comments apply to the older port of bash
+   11-16-92  23:21     290820           0  bash.exe
+
+To use this version of bash, change the *.cmd files to use bash, and 
+change the first line of the *.sh files from
+   #!/bin/sh
+to
+   #!\bin\bash
+
+Unfortunately, others have reported problems with this port of bash. I
+have not been able to get the newer port of bash to work properly with
+these scripts. Information on using bash or ksh with man would be
+appreciated.
+
+
+Bugs:
+
+1. If, say, both /man/man1/ls.1 and /man/cat1/ls.1 exist, man still
+attempts to create /man/cat1/ls.1.gz. Workaround: do "gzip *" on
+all existing cat* directories.
+
+2. No support for compressed files on FAT drives. It may be possible 
+to add
+  {"gz", "gzip -dc -Sgz"}
+to the list in config.h (and then re-compile) so that man could read 
+compressed files of the form /man/cat1/ls.1gz (created manually).
+
+
+A number of utility programs are needed. These include gawk, sed,
+Stewartson's sh or bash, less, and cawf or groff, all available at
+ftp-os2.cdrom.com.
+
+The file "director.c" was originally from Michael Rendell
+<{uunet,utai}michael@garfield>, in 1897 [sic] according to the
+comments.  The enclosed version has been enhanced by Ian Stewartson
+<istewart@datlog.co.uk>. This file and those in include/ are from
+Stewartson's very nice shell for OS/2 and DOS.
+
+cawf, from Vic Abell <abe@cc.purdue.edu>, is a C version of awf, Henry
+Spencer's Amazingly Workable (text) Formatter. "Cawf and awf provide a
+usable subset of raw nroff capabilities and the styles of the man(7),
+me(7) and ms(7) macro sets." Version 4.07 is available from
+ftp-os2.cdrom.com.
+
+Thanks to John Eaton, Michael Rendell, Ian Stewartson, Vic Abell,
+and Kai Uwe Rommel. Thanks to Cheng-Yang Tan for the help on bash.
+
+--
+Darrel Hankerson hankedr@mail.auburn.edu
+7 January 1994, scripts updated 23-Jan-94

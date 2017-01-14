@@ -1,0 +1,157 @@
+# Makefile for man and manpath
+#
+# - for GNU gcc (emx 0.8g kit) [executables for OS/2 2.x or DOS (32-bit)]
+# - for Microsoft C 6.00A      [executables for OS/2 or MSDOS (16-bit)]
+
+# To use, enter "make -f Makefile.os2" (this makefile depends on its
+# name being "Makefile.os2").
+#
+# Tested with dmake 3.8 and GNU make 3.68 under OS/2
+
+SHELL=/bin/sh
+
+default:
+	@echo "Enter $(MAKE) -f Makefile.os2 target                     "
+	@echo " where 'target' is chosen from                          " 
+	@echo "   msc      OS/2 exe [Microsoft C 6.00a]                "
+	@echo "   mscbnd   OS/2 and DOS exe [Microsoft C 6.00a]        "
+	@echo "   emx      OS/2 32-bit exe [EMX/gcc; uses emxlibc.dll] "
+
+msc: 
+	$(MAKE) -f Makefile.os2 all \
+	CC="cl -nologo -AC" O=".obj" \
+	CFLAG="-Iinclude" \
+	GETOPT="getopt.obj" \
+	DIRECTOR="director.obj" \
+	LDFLAGS="-Lp"
+
+mscbnd: 
+	$(MAKE) -f Makefile.os2 all \
+	CC="cl -nologo -AC" O=".obj" \
+	CFLAG="-Iinclude" \
+	GETOPT="getopt.obj" \
+	DIRECTOR="director.obj" \
+	LDFLAGS="-Lp" LBIND="-Fb" \
+	BIND="bind man.exe /n DOSQFSATTACH"
+
+msc-debug: 
+	$(MAKE) -f Makefile.os2 all \
+	CC="cl -nologo -AC -Zi" O=".obj" \
+	CFLAG="-Od -Iinclude" \
+	GETOPT="getopt.obj" \
+	DIRECTOR="director.obj" \
+	LDFLAGS="-Lp"
+
+emx:  
+	$(MAKE) -f Makefile.os2 all \
+	CC="gcc -Zomf -Zmtd" O=".obj" \
+	CFLAG="-O" \
+	LFLAGS="-s" \
+	BIT="32"
+
+#### Start of system configuration section. ####
+
+# If you modify these values, you should also modify the corresponding
+# portions of config.h.in.
+
+srcdir = @srcdir@
+
+pager = less
+man_install_flags = @man_install_flags@
+
+DEFS = -DSTDC_HEADERS -DCOMPRESS -DDIRENT -DHAS_TROFF
+
+CFLAGS = $(CFLAG) $(CDEBUG) $(DEFS) -DOS2
+
+# Where to install the executables.
+bindir = /bin
+# Where to put manpath.config
+libdir = /bin
+manpath_config_file = manpath.cfg
+
+# Where to put the manual pages.
+mandir = /etc/man
+# Extension (not including `.') for the installed manual page filenames.
+manext = 1
+
+troff = groff -Tps -man
+
+#### End of system configuration section. ####
+
+all: man.exe manpath.exe apropos whatis makewhatis manpages
+
+MANOBJ = man.c manpath.c gripes$O glob$O util$O \
+	$(DIRECTOR) $(GETOPT)
+
+MANPATHOBJ = manpath.c gripes$O util$O $(GETOPT)
+
+.c$O :
+	$(CC) $(CFLAGS) -c $<
+
+manpath.exe: $(MANPATHOBJ) config.h manpath.h
+	$(CC) $(CFLAGS) -DMAIN -o $@ $(MANPATHOBJ) \
+	manpath$(BIT).def $(LDFLAGS) $(LBIND)
+
+man.exe: $(MANOBJ) config.h gripes.h man$(BIT).def
+	$(CC) $(CFLAGS) -o $@ $(MANOBJ) man$(BIT).def $(LDFLAGS)
+	$(BIND)
+
+gripes$O: gripes.h
+util$O: gripes.h
+
+apropos: apropos.sh
+	sed -e 's,%libdir%,$(libdir),' -e 's,%bindir%,$(bindir),' \
+	    -e 's,%pager%,$(pager),' \
+		apropos.sh > apropos
+
+whatis: whatis.sh
+	sed -e 's,%libdir%,$(libdir),' -e 's,%bindir%,$(bindir),' \
+	    -e 's,%pager%,$(pager),' \
+		whatis.sh > whatis
+
+makewhatis: makewhatis.sh
+	sed -e 's/%sections%/@sections@/' makewhatis.sh > makewhatis
+
+install: all install.man apropos whatis makewhatis
+	install -c $(man_install_flags) man.exe $(bindir)/man.exe
+	install -c -m 755 manpath.exe $(bindir)/manpath.exe
+	install -c -m 755 apropos $(bindir)/apropos
+	install -c -m 755 whatis $(bindir)/whatis
+	install -c -m 754 makewhatis $(bindir)/makewhatis
+	install -c -m 644 manpath.config $(libdir)/$(config_file)
+
+manpages: man.$(manext) manpath.$(manext) apropos.$(manext) whatis.$(manext) 
+
+man.$(manext): man.man
+	sed -e 's,%libdir%,$(libdir),' -e 's,%bindir%,$(bindir),' \
+	    -e 's,%pager%,$(pager),' -e 's,%troff%,$(troff),' \
+	    -e 's,%manpath_config_file%,$(config_file),' \
+	man.man > man.$(manext)
+
+manpath.$(manext): manpath.man
+	sed -e 's,%libdir%,$(libdir),' -e 's,%bindir%,$(bindir),' \
+	    -e 's,%pager%,$(pager),' -e 's,%troff%,$(troff),' \
+	    -e 's,%manpath_config_file%,$(config_file),' \
+	manpath.man > manpath.$(manext)
+
+apropos.$(manext): apropos.man
+	sed -e 's,%libdir%,$(libdir),' -e 's,%bindir%,$(bindir),' \
+	    -e 's,%pager%,$(pager),' -e 's,%troff%,$(troff),' \
+	    -e 's,%manpath_config_file%,$(config_file),' \
+	apropos.man > apropos.$(manext)
+
+whatis.$(manext): whatis.man
+	sed -e 's,%libdir%,$(libdir),' -e 's,%bindir%,$(bindir),' \
+	    -e 's,%pager%,$(pager),' -e 's,%troff%,$(troff),' \
+	    -e 's,%manpath_config_file%,$(config_file),' \
+	whatis.man > whatis.$(manext)
+
+install.man:
+	install -c -m 644 man.$(manext) $(mandir)/man.$(manext)
+	install -c -m 644 manpath.$(manext) $(mandir)/manpath.$(manext)
+	install -c -m 644 apropos.$(manext) $(mandir)/apropos.$(manext)
+	install -c -m 644 whatis.$(manext) $(mandir)/whatis.$(manext)
+
+clean:
+	rm -f *.obj *.o *~ core
+
