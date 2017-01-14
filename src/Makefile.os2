@@ -136,12 +136,14 @@ makewhatis: makewhatis.sh
 		makewhatis.sh > makewhatis
 
 install: all install.man apropos whatis makewhatis
-	install -c $(man_install_flags) man.exe $(bindir)/man.exe
-	install -c -m 755 manpath.exe $(bindir)/manpath.exe
-	install -c -m 755 apropos $(bindir)/apropos
-	install -c -m 755 whatis $(bindir)/whatis
-	install -c -m 754 makewhatis $(bindir)/makewhatis
-	install -c -m 644 manpath.config $(libdir)/$(config_file)
+	install -d $(DESTDIR)$(bindir)
+	install -c $(man_install_flags) man.exe $(DESTDIR)$(bindir)/man.exe
+	install -c -m 755 manpath.exe $(DESTDIR)$(bindir)/manpath.exe
+	install -c -m 755 apropos $(DESTDIR)$(bindir)/apropos
+	install -c -m 755 whatis $(DESTDIR)$(bindir)/whatis
+	install -c -m 754 makewhatis $(DESTDIR)$(bindir)/makewhatis
+	install -d $(DESTDIR)$(libdir)
+	install -c -m 644 manpath.config $(DESTDIR)$(libdir)/$(config_file)
 
 manpages: man.$(manext) manpath.$(manext) apropos.$(manext) whatis.$(manext) 
 
@@ -170,10 +172,11 @@ whatis.$(manext): whatis.man
 	whatis.man > whatis.$(manext)
 
 install.man:
-	install -c -m 644 man.$(manext) $(mandir)/man.$(manext)
-	install -c -m 644 manpath.$(manext) $(mandir)/manpath.$(manext)
-	install -c -m 644 apropos.$(manext) $(mandir)/apropos.$(manext)
-	install -c -m 644 whatis.$(manext) $(mandir)/whatis.$(manext)
+	install -d $(DESTDIR)$(mandir)
+	install -c -m 644 man.$(manext) $(DESTDIR)$(mandir)/man.$(manext)
+	install -c -m 644 manpath.$(manext) $(DESTDIR)$(mandir)/manpath.$(manext)
+	install -c -m 644 apropos.$(manext) $(DESTDIR)$(mandir)/apropos.$(manext)
+	install -c -m 644 whatis.$(manext) $(DESTDIR)$(mandir)/whatis.$(manext)
 
 clean:
 	rm -f *.obj *.o *~ core
