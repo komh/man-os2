@@ -79,14 +79,17 @@ CFLAGS = $(CFLAG) $(CDEBUG) $(DEFS) -DOS2
 # Default object extension
 O ?= .obj
 
+# Prefix
+prefix ?= /usr/local
+
 # Where to install the executables.
-bindir = /bin
+bindir = $(prefix)/bin
 # Where to put manpath.config
-libdir = /bin
+libdir = $(prefix)/lib
 manpath_config_file = manpath.cfg
 
 # Where to put the manual pages.
-mandir = /etc/man
+mandir = $(prefix)/man/man1
 # Extension (not including `.') for the installed manual page filenames.
 manext = 1
 
